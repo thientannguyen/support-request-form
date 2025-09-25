@@ -1,9 +1,8 @@
-import "./App.css";
 import RequestFormPage from "./pages/RequestFormPage";
 
 function App() {
   return (
-    <div>
+    <div className="font-sans text-[#1E1E2E]">
       <RequestFormPage />
     </div>
   );
