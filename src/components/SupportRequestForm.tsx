@@ -115,12 +115,12 @@ const SupportRequestForm = () => {
 
         <div className="mb-3">
           <label>Tags</label>
-          <div className="flex flex-wrap mb-2">
+          <div className="flex flex-wrap gap-4">
             <Controller
               name="tags"
               control={control}
               render={({ field }) => (
-                <div className="flex flex-wrap gap-4">
+                <>
                   {tagOptions.map((tag) => (
                     <div key={tag.value} className="flex items-center mr-5">
                       <input
