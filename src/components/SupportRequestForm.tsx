@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import supportFormSchema from "../utils/schema";
 import type { SupportRequestFormData } from "../models";
 
@@ -31,6 +31,11 @@ const SupportRequestForm = () => {
       tags: [],
       stepsToReproduce: [{ step: "" }],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "stepsToReproduce",
   });
 
   const onSubmit = (data: SupportRequestFormData) => {
@@ -114,8 +119,8 @@ const SupportRequestForm = () => {
         </div>
 
         <div className="mb-3">
-          <label>Tags</label>
-          <div className="flex flex-wrap gap-4">
+          <label className="block text-gray-700 font-semibold mb-2">Tags</label>
+          <div className="flex flex-wrap gap-3">
             <Controller
               name="tags"
               control={control}
@@ -148,6 +153,55 @@ const SupportRequestForm = () => {
           </div>
           {errors.tags && (
             <p className="text-red-500 text-sm mt-1">{errors.tags.message}</p>
+          )}
+        </div>
+
+        <div className="mb-3">
+          <label className="block text-gray-700 font-semibold mb-2">
+            Steps to Reproduce
+          </label>
+          <div className="flex flex-col gap-2">
+            {fields.map((field, index) => (
+              <div key={field.id} className="mb-2">
+                <div className="flex gap-2">
+                  <input
+                    placeholder={`Step ${index + 1}`}
+                    {...register(`stepsToReproduce.${index}.step`)}
+                    className={`w-full px-3 py-2 border rounded-md ${
+                      errors.stepsToReproduce?.[index]?.step
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
+                  />
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      className="px-3 py-2 rounded cursor-pointer font-semibold border-0 bg-red-500 text-white"
+                      onClick={() => remove(index)}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {errors.stepsToReproduce?.[index]?.step && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.stepsToReproduce[index].step.message}
+                  </p>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="px-3 py-2 max-w-24 rounded cursor-pointer font-semibold border-0 bg-green-500 text-white mt-2"
+              onClick={() => append({ step: "" })}
+            >
+              Add Step
+            </button>
+          </div>
+          {errors.stepsToReproduce && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.stepsToReproduce.message}
+            </p>
           )}
         </div>
 
