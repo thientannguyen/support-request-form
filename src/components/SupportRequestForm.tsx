@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import supportFormSchema from "../utils/schema";
 import type { SupportRequestFormData } from "../models";
 
@@ -9,10 +9,18 @@ const issueTypeOptions = [
   { value: "generalInquiry", label: "General Inquiry" },
 ];
 
+const tagOptions = [
+  { value: "ui", label: "UI" },
+  { value: "backend", label: "Backend" },
+  { value: "performance", label: "Performance" },
+  { value: "security", label: "Security" },
+];
+
 const SupportRequestForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(supportFormSchema),
@@ -102,6 +110,44 @@ const SupportRequestForm = () => {
             <p className="text-red-500 text-sm mt-1">
               {errors.issueType.message}
             </p>
+          )}
+        </div>
+
+        <div className="mb-3">
+          <label>Tags</label>
+          <div className="flex flex-wrap mb-2">
+            <Controller
+              name="tags"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-wrap gap-4">
+                  {tagOptions.map((tag) => (
+                    <div key={tag.value} className="flex items-center mr-5">
+                      <input
+                        type="checkbox"
+                        id={`tag-${tag.value}`}
+                        value={tag.value}
+                        checked={field.value.includes(tag.value)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          const value = e.target.value;
+                          const newValue = checked
+                            ? [...field.value, value]
+                            : field.value.filter((val) => val !== value);
+                          field.onChange(newValue);
+                        }}
+                      />
+                      <label htmlFor={`tag-${tag.value}`} className="ml-2">
+                        {tag.label}
+                      </label>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </div>
+          {errors.tags && (
+            <p className="text-red-500 text-sm mt-1">{errors.tags.message}</p>
           )}
         </div>
 
