@@ -1,7 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import supportFormSchema from "../utils/schema";
+import { useDispatch } from "react-redux";
 import type { SupportRequestFormData } from "../models";
+import { submitForm } from "../store/formSlice";
+import supportFormSchema from "../utils/schema";
 
 const issueTypeOptions = [
   { value: "bugReport", label: "Bug Report" },
@@ -17,6 +19,7 @@ const tagOptions = [
 ];
 
 const SupportRequestForm = () => {
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -39,7 +42,8 @@ const SupportRequestForm = () => {
   });
 
   const onSubmit = (data: SupportRequestFormData) => {
-    console.log(data);
+    dispatch(submitForm(data));
+    console.log("Form Submitted:", data);
   };
 
   return (
