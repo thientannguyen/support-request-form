@@ -1,4 +1,3 @@
-import { describe, expect, it } from "vitest";
 import supportFormSchema from "./schema";
 
 describe("Support Form Schema", () => {
