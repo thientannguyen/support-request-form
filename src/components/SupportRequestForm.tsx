@@ -1,25 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import type { SupportRequestFormData } from "../models";
+import { useNavigate } from "react-router-dom";
+import {
+  issueTypeOptions,
+  tagOptions,
+  type SupportRequestFormData,
+} from "../models";
 import { submitForm } from "../store/formSlice";
 import supportFormSchema from "../utils/schema";
 
-const issueTypeOptions = [
-  { value: "bugReport", label: "Bug Report" },
-  { value: "featureRequest", label: "Feature Request" },
-  { value: "generalInquiry", label: "General Inquiry" },
-];
-
-const tagOptions = [
-  { value: "ui", label: "UI" },
-  { value: "backend", label: "Backend" },
-  { value: "performance", label: "Performance" },
-  { value: "security", label: "Security" },
-];
-
 const SupportRequestForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -43,7 +36,7 @@ const SupportRequestForm = () => {
 
   const onSubmit = (data: SupportRequestFormData) => {
     dispatch(submitForm(data));
-    console.log("Form Submitted:", data);
+    navigate("/confirmation");
   };
 
   return (
