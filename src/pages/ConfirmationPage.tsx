@@ -64,8 +64,10 @@ const ConfirmationPage = () => {
               <strong>Tags:</strong>{" "}
               {tags.map((tag) => getTagLabel(tag)).join(", ")}
             </p>
-            <p className="my-2">
-              <strong>Steps to Reproduce:</strong>{" "}
+            <div className="my-2">
+              <p className="mb-2">
+                <strong>Steps to Reproduce:</strong>
+              </p>
               <ol className="pl-5 list-decimal">
                 {stepsToReproduce.map((item, index) => (
                   <li className="mb-1" key={index}>
@@ -73,7 +75,7 @@ const ConfirmationPage = () => {
                   </li>
                 ))}
               </ol>
-            </p>
+            </div>
           </div>
         </div>
       </div>
