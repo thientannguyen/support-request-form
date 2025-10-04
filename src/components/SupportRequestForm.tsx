@@ -40,15 +40,15 @@ const SupportRequestForm = () => {
   };
 
   return (
-    <div className="max-w-[600px] mx-auto p-5 sm:p-4 bg-gray-50 rounded-lg shadow-md">
-      <h1 className="text-center mb-5 text-gray-800 text-4xl font-bold">
+    <div className="mx-auto max-w-[600px] rounded-lg bg-gray-50 p-5 shadow-md sm:p-4">
+      <h1 className="mb-5 text-center text-4xl font-bold text-gray-800">
         Support Request Form
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-3">
           <label
             htmlFor="fullName"
-            className="block text-gray-700 font-semibold mb-2"
+            className="mb-2 block font-semibold text-gray-700"
           >
             Full Name
           </label>
@@ -56,12 +56,12 @@ const SupportRequestForm = () => {
             id="fullName"
             type="text"
             {...register("fullName")}
-            className={`w-full px-3 py-2 border rounded-md ${
+            className={`w-full rounded-md border px-3 py-2 ${
               errors.fullName ? "border-red-500" : "border-gray-300"
             }`}
           />
           {errors.fullName && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="mt-1 text-sm text-red-500">
               {errors.fullName.message}
             </p>
           )}
@@ -70,7 +70,7 @@ const SupportRequestForm = () => {
         <div className="mb-3">
           <label
             htmlFor="email"
-            className="block text-gray-700 font-semibold mb-2"
+            className="mb-2 block font-semibold text-gray-700"
           >
             Email Address
           </label>
@@ -78,26 +78,26 @@ const SupportRequestForm = () => {
             id="email"
             type="email"
             {...register("email")}
-            className={`w-full px-3 py-2 border rounded-md ${
+            className={`w-full rounded-md border px-3 py-2 ${
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
           />
           {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
           )}
         </div>
 
         <div className="mb-3">
           <label
             htmlFor="issueType"
-            className="block text-gray-700 font-semibold mb-2"
+            className="mb-2 block font-semibold text-gray-700"
           >
             Issue Type
           </label>
           <select
             id="issueType"
             {...register("issueType")}
-            className={`w-full px-3 py-2 border rounded-md ${
+            className={`w-full rounded-md border px-3 py-2 ${
               errors.issueType ? "border-red-500" : "border-gray-300"
             }`}
           >
@@ -109,14 +109,14 @@ const SupportRequestForm = () => {
             ))}
           </select>
           {errors.issueType && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="mt-1 text-sm text-red-500">
               {errors.issueType.message}
             </p>
           )}
         </div>
 
         <div className="mb-3">
-          <label className="block text-gray-700 font-semibold mb-2">Tags</label>
+          <label className="mb-2 block font-semibold text-gray-700">Tags</label>
           <div className="flex flex-wrap gap-3">
             <Controller
               name="tags"
@@ -124,7 +124,7 @@ const SupportRequestForm = () => {
               render={({ field }) => (
                 <>
                   {tagOptions.map((tag) => (
-                    <div key={tag.value} className="flex items-center mr-5">
+                    <div key={tag.value} className="mr-5 flex items-center">
                       <input
                         type="checkbox"
                         id={`tag-${tag.value}`}
@@ -149,12 +149,12 @@ const SupportRequestForm = () => {
             />
           </div>
           {errors.tags && (
-            <p className="text-red-500 text-sm mt-1">{errors.tags.message}</p>
+            <p className="mt-1 text-sm text-red-500">{errors.tags.message}</p>
           )}
         </div>
 
         <div className="mb-3">
-          <label className="block text-gray-700 font-semibold mb-2">
+          <label className="mb-2 block font-semibold text-gray-700">
             Steps to Reproduce
           </label>
           <div className="flex flex-col gap-2">
@@ -164,7 +164,7 @@ const SupportRequestForm = () => {
                   <input
                     placeholder={`Step ${index + 1}`}
                     {...register(`stepsToReproduce.${index}.step`)}
-                    className={`w-full px-3 py-2 border rounded-md ${
+                    className={`w-full rounded-md border px-3 py-2 ${
                       errors.stepsToReproduce?.[index]?.step
                         ? "border-red-500"
                         : "border-gray-300"
@@ -173,7 +173,7 @@ const SupportRequestForm = () => {
                   {index > 0 && (
                     <button
                       type="button"
-                      className="px-3 py-2 rounded cursor-pointer font-semibold border-0 bg-red-500 text-white"
+                      className="cursor-pointer rounded border-0 bg-red-500 px-3 py-2 font-semibold text-white"
                       onClick={() => remove(index)}
                     >
                       Remove
@@ -181,7 +181,7 @@ const SupportRequestForm = () => {
                   )}
                 </div>
                 {errors.stepsToReproduce?.[index]?.step && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {errors.stepsToReproduce[index].step.message}
                   </p>
                 )}
@@ -189,14 +189,14 @@ const SupportRequestForm = () => {
             ))}
             <button
               type="button"
-              className="px-3 py-2 max-w-24 rounded cursor-pointer font-semibold border-0 bg-green-500 text-white mt-2"
+              className="mt-2 max-w-24 cursor-pointer rounded border-0 bg-green-500 px-3 py-2 font-semibold text-white"
               onClick={() => append({ step: "" })}
             >
               Add Step
             </button>
           </div>
           {errors.stepsToReproduce && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="mt-1 text-sm text-red-500">
               {errors.stepsToReproduce.message}
             </p>
           )}
@@ -204,7 +204,7 @@ const SupportRequestForm = () => {
 
         <button
           type="submit"
-          className="w-full px-3 py-3 bg-blue-600 text-white rounded text-base font-semibold cursor-pointer transition-colors duration-300 hover:bg-blue-700"
+          className="w-full cursor-pointer rounded bg-blue-600 px-3 py-3 text-base font-semibold text-white transition-colors duration-300 hover:bg-blue-700"
         >
           Submit Request
         </button>
