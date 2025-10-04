@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useCallback, useMemo } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +10,9 @@ import {
 } from "../models";
 import { submitForm } from "../store/formSlice";
 import supportFormSchema from "../utils/schema";
+import FormField from "./FormField";
+import StepInput from "./StepInput";
+import TagCheckbox from "./TagCheckbox";
 
 const SupportRequestForm = () => {
   const dispatch = useDispatch();
@@ -34,10 +38,50 @@ const SupportRequestForm = () => {
     name: "stepsToReproduce",
   });
 
-  const onSubmit = (data: SupportRequestFormData) => {
-    dispatch(submitForm(data));
-    navigate("/confirmation");
-  };
+  // Memoize form submission handler to prevent unnecessary re-renders
+  const onSubmit = useCallback(
+    (data: SupportRequestFormData) => {
+      dispatch(submitForm(data));
+      navigate("/confirmation");
+    },
+    [dispatch, navigate]
+  );
+
+  const createRemoveHandler = useCallback(
+    (index: number) => () => {
+      remove(index);
+    },
+    [remove]
+  );
+
+  const handleAddStep = useCallback(() => {
+    append({ step: "" });
+  }, [append]);
+
+  // Memoize issue type options to prevent re-computation
+  const issueTypeOptionsList = useMemo(
+    () =>
+      issueTypeOptions.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      )),
+    []
+  );
+
+  // Memoize tag change handler
+  const handleTagChange = useCallback(
+    (field: { value: string[]; onChange: (value: string[]) => void }) =>
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        const value = e.target.value;
+        const newValue = checked
+          ? [...field.value, value]
+          : field.value.filter((val: string) => val !== value);
+        field.onChange(newValue);
+      },
+    []
+  );
 
   return (
     <div className="mx-auto max-w-[600px] rounded-lg bg-gray-50 p-5 shadow-md sm:p-4">
@@ -45,13 +89,11 @@ const SupportRequestForm = () => {
         Support Request Form
       </h1>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mb-3">
-          <label
-            htmlFor="fullName"
-            className="mb-2 block font-semibold text-gray-700"
-          >
-            Full Name
-          </label>
+        <FormField
+          label="Full Name"
+          htmlFor="fullName"
+          error={errors.fullName?.message}
+        >
           <input
             id="fullName"
             type="text"
@@ -60,20 +102,13 @@ const SupportRequestForm = () => {
               errors.fullName ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.fullName && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.fullName.message}
-            </p>
-          )}
-        </div>
+        </FormField>
 
-        <div className="mb-3">
-          <label
-            htmlFor="email"
-            className="mb-2 block font-semibold text-gray-700"
-          >
-            Email Address
-          </label>
+        <FormField
+          label="Email Address"
+          htmlFor="email"
+          error={errors.email?.message}
+        >
           <input
             id="email"
             type="email"
@@ -82,18 +117,13 @@ const SupportRequestForm = () => {
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.email && (
-            <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
-          )}
-        </div>
+        </FormField>
 
-        <div className="mb-3">
-          <label
-            htmlFor="issueType"
-            className="mb-2 block font-semibold text-gray-700"
-          >
-            Issue Type
-          </label>
+        <FormField
+          label="Issue Type"
+          htmlFor="issueType"
+          error={errors.issueType?.message}
+        >
           <select
             id="issueType"
             {...register("issueType")}
@@ -102,18 +132,9 @@ const SupportRequestForm = () => {
             }`}
           >
             <option value="">Select an issue type</option>
-            {issueTypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
+            {issueTypeOptionsList}
           </select>
-          {errors.issueType && (
-            <p className="mt-1 text-sm text-red-500">
-              {errors.issueType.message}
-            </p>
-          )}
-        </div>
+        </FormField>
 
         <div className="mb-3">
           <label className="mb-2 block font-semibold text-gray-700">Tags</label>
@@ -124,25 +145,14 @@ const SupportRequestForm = () => {
               render={({ field }) => (
                 <>
                   {tagOptions.map((tag) => (
-                    <div key={tag.value} className="mr-5 flex items-center">
-                      <input
-                        type="checkbox"
-                        id={`tag-${tag.value}`}
-                        value={tag.value}
-                        checked={field.value.includes(tag.value)}
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          const value = e.target.value;
-                          const newValue = checked
-                            ? [...field.value, value]
-                            : field.value.filter((val) => val !== value);
-                          field.onChange(newValue);
-                        }}
-                      />
-                      <label htmlFor={`tag-${tag.value}`} className="ml-2">
-                        {tag.label}
-                      </label>
-                    </div>
+                    <TagCheckbox
+                      key={tag.value}
+                      id={`tag-${tag.value}`}
+                      value={tag.value}
+                      label={tag.label}
+                      checked={field.value.includes(tag.value)}
+                      onChange={handleTagChange(field)}
+                    />
                   ))}
                 </>
               )}
@@ -159,38 +169,19 @@ const SupportRequestForm = () => {
           </label>
           <div className="flex flex-col gap-2">
             {fields.map((field, index) => (
-              <div key={field.id} className="mb-2">
-                <div className="flex gap-2">
-                  <input
-                    placeholder={`Step ${index + 1}`}
-                    {...register(`stepsToReproduce.${index}.step`)}
-                    className={`w-full rounded-md border px-3 py-2 ${
-                      errors.stepsToReproduce?.[index]?.step
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  />
-                  {index > 0 && (
-                    <button
-                      type="button"
-                      className="cursor-pointer rounded border-0 bg-red-500 px-3 py-2 font-semibold text-white"
-                      onClick={() => remove(index)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-                {errors.stepsToReproduce?.[index]?.step && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.stepsToReproduce[index].step.message}
-                  </p>
-                )}
-              </div>
+              <StepInput
+                key={field.id}
+                placeholder={`Step ${index + 1}`}
+                register={register(`stepsToReproduce.${index}.step`)}
+                error={errors.stepsToReproduce?.[index]?.step?.message}
+                showRemoveButton={index > 0}
+                onRemove={createRemoveHandler(index)}
+              />
             ))}
             <button
               type="button"
               className="mt-2 max-w-24 cursor-pointer rounded border-0 bg-green-500 px-3 py-2 font-semibold text-white"
-              onClick={() => append({ step: "" })}
+              onClick={handleAddStep}
             >
               Add Step
             </button>

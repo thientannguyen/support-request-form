@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { issueTypeOptions, tagOptions } from "../models";
@@ -7,6 +8,28 @@ const ConfirmationPage = () => {
   const currentSubmission = useSelector(
     (state: RootState) => state.form.currentSubmission
   );
+
+  // Memoize the formatted tags string
+  const formattedTags = useMemo(() => {
+    if (!currentSubmission) return "";
+    return currentSubmission.tags
+      .map((tag) => {
+        const tagOption = tagOptions.find((option) => option.value === tag);
+        return tagOption ? tagOption.label : tag;
+      })
+      .join(", ");
+  }, [currentSubmission]);
+
+  // Memoize the issue type label
+  const issueTypeLabel = useMemo(() => {
+    if (!currentSubmission) return "";
+    const issueTypeOption = issueTypeOptions.find(
+      (option) => option.value === currentSubmission.issueType
+    );
+    return issueTypeOption
+      ? issueTypeOption.label
+      : currentSubmission.issueType;
+  }, [currentSubmission]);
 
   if (!currentSubmission) {
     return (
@@ -27,18 +50,7 @@ const ConfirmationPage = () => {
     );
   }
 
-  const { fullName, email, issueType, tags, stepsToReproduce } =
-    currentSubmission;
-
-  const getIssueTypeLabel = (value: string) => {
-    const issueType = issueTypeOptions.find((option) => option.value === value);
-    return issueType ? issueType.label : value;
-  };
-
-  const getTagLabel = (value: string) => {
-    const tag = tagOptions.find((option) => option.value === value);
-    return tag ? tag.label : value;
-  };
+  const { fullName, email, stepsToReproduce } = currentSubmission;
 
   return (
     <div className="mx-auto max-w-[800px] p-4 sm:p-5">
@@ -58,11 +70,10 @@ const ConfirmationPage = () => {
               <strong>Email:</strong> {email}
             </p>
             <p className="my-2">
-              <strong>Issue Type:</strong> {getIssueTypeLabel(issueType)}
+              <strong>Issue Type:</strong> {issueTypeLabel}
             </p>
             <p className="my-2">
-              <strong>Tags:</strong>{" "}
-              {tags.map((tag) => getTagLabel(tag)).join(", ")}
+              <strong>Tags:</strong> {formattedTags}
             </p>
             <div className="my-2">
               <p className="mb-2">
